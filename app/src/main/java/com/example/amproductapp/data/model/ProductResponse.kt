@@ -1,6 +1,6 @@
 package com.example.amproductapp.data.model
 
-data class ApiResponse(
+data class ProductResponse(
     val success: Boolean,
     val message: String,
     val productId: Int? = null,

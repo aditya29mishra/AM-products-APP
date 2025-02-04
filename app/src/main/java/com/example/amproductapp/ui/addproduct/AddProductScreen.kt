@@ -16,19 +16,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.amproductapp.data.model.Product
 import com.example.amproductapp.ui.viewModel.ProductViewModel
 import com.example.amproductapp.utils.NetworkUtils.isOnline
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddProductScreen(navController: NavController ,viewModel: ProductViewModel = hiltViewModel()) {
+fun AddProductScreen(
+    navController: NavController ,
+    viewModel: ProductViewModel = hiltViewModel()
+) {
+    val context = LocalContext.current
     var productName by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
     var tax by remember { mutableStateOf("") }
     var productType by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
+    var message by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -82,17 +90,33 @@ fun AddProductScreen(navController: NavController ,viewModel: ProductViewModel =
 
             Button(
                 onClick = {
-
-                    if (isOnline(navController.context)){
-                        viewModel.addProduct(productName, productType, price, tax)
-                    }else{
-                        viewModel.addProductOffline(productName, productType, price, tax)
+                    if (productName.isNotEmpty() && price.isNotEmpty() && tax.isNotEmpty() && productType.isNotEmpty()) {
+                        isLoading = true
+                        viewModel.addProduct(
+                             Product(productName, price, tax.toDouble(), productType, null),
+                            context
+                        ) { success, responseMessage ->
+                            isLoading = false
+                            message = responseMessage
+                            if (success) {
+                                navController.popBackStack()
+                            }
+                        }
+                    } else {
+                        message = "Please fill all fields!"
                     }
-                    navController.popBackStack() // Navigate back after submission
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Submit")
+            }
+
+            if (message.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = message,
+                    color = if (message.contains("success", true)) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                )
             }
         }
     }

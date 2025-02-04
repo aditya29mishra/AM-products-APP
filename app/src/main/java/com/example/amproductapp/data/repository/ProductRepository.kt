@@ -1,55 +1,53 @@
 package com.example.amproductapp.data.repository
 
-import android.util.Log
 import com.example.amproductapp.data.local.ProductDao
 import com.example.amproductapp.data.local.ProductEntity
-import com.example.amproductapp.data.model.ApiResponse
 import com.example.amproductapp.data.model.Product
 import com.example.amproductapp.data.remote.ApiService
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.HttpException
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class ProductRepository @Inject constructor(
     private val apiService: ApiService,
-    private val productDao: ProductDao
-){
+    private val productDao: ProductDao,
+    @ApplicationContext private val context: android.content.Context
+) {
     suspend fun getProducts(): List<Product> {
-        return apiService.getProducts()
-    }
-
-    suspend fun addProduct(
-        productName: RequestBody,
-        productType: RequestBody,
-        price: RequestBody,
-        tax: RequestBody,
-        image: MultipartBody.Part?
-    ) : ApiResponse? {
         return try {
-            val response = apiService.addProduct(productName, productType, price, tax, image)
-            Log.d("API_SUCCESS", "Product added successfully: $response")
-            response
-        } catch (e: HttpException) {
-            Log.e("API_ERROR", "HTTP error: ${e.code()} - ${e.message()}")
-            null
+            apiService.getProducts()
         } catch (e: Exception) {
-            Log.e("API_ERROR", "Unexpected error: ${e.localizedMessage}")
-            null
+            emptyList()
+        }
+    }
+    suspend fun addProductToServer(product: Product): Boolean {
+        return try {
+            val nameBody = product.productName.toRequestBody("text/plain".toMediaType())
+            val typeBody = product.productType.toRequestBody("text/plain".toMediaType())
+            val priceBody = product.price.toString().toRequestBody("text/plain".toMediaType())
+            val taxBody = product.tax.toString().toRequestBody("text/plain".toMediaType())
+
+            val response = apiService.addProduct(nameBody, typeBody, priceBody, taxBody, null)
+            response.isSuccessful
+        } catch (e: Exception) {
+            false
         }
     }
     suspend fun addProductOffline(product: ProductEntity) {
-        productDao.insertProduct(product)
+        withContext(Dispatchers.IO) {
+            productDao.insertProduct(product)
+        }
     }
-
     suspend fun getOfflineProducts(): List<ProductEntity> {
-        return productDao.getAllProducts()
+        return withContext(Dispatchers.IO) {
+            productDao.getAllProducts()
+        }
     }
-
     suspend fun syncOfflineProducts() {
-        val offlineProducts = productDao.getAllProducts()
+        val offlineProducts = getOfflineProducts()
         for (product in offlineProducts) {
             try {
                 val nameBody = product.productName.toRequestBody("text/plain".toMediaType())
@@ -58,13 +56,12 @@ class ProductRepository @Inject constructor(
                 val taxBody = product.tax.toString().toRequestBody("text/plain".toMediaType())
 
                 val response = apiService.addProduct(nameBody, typeBody, priceBody, taxBody, null)
-                if (response.success) {
-                    productDao.deleteProduct(product.id) // Remove from offline storage after sync
+                if (response.isSuccessful) {
+                    productDao.deleteProduct(product.id)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
-
 }

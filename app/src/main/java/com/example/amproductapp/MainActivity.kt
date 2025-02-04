@@ -5,13 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.lifecycleScope
+import androidx.work.*
 import com.example.amproductapp.ui.navigation.AppNavGraph
 import com.example.amproductapp.ui.viewModel.ProductViewModel
-import com.example.amproductapp.utils.NetworkUtils
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
-import javax.inject.Inject
+import java.util.concurrent.TimeUnit
+import androidx.work.PeriodicWorkRequestBuilder
+import com.example.amproductapp.workers.SyncWorker
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -23,5 +23,21 @@ class MainActivity : ComponentActivity() {
             val productViewModel: ProductViewModel = hiltViewModel()
             AppNavGraph()
         }
+        scheduleSync()
+    }
+    private fun scheduleSync() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val workRequest = PeriodicWorkRequestBuilder<SyncWorker>(15, TimeUnit.MINUTES)
+            .setConstraints(constraints)
+            .build()
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "SyncOfflineProducts",
+            ExistingPeriodicWorkPolicy.KEEP,
+            workRequest
+        )
     }
 }

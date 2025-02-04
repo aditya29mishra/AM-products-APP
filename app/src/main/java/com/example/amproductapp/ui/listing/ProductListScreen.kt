@@ -10,10 +10,13 @@ import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import com.example.amproductapp.R
 import com.example.amproductapp.data.model.Product
 import com.example.amproductapp.ui.viewModel.ProductViewModel
 import com.example.amproductapp.ui.navigation.Screen
@@ -23,9 +26,9 @@ import com.example.amproductapp.ui.navigation.Screen
 @Composable
 fun ProductListScreen(navController: NavController, viewModel: ProductViewModel = hiltViewModel()) {
     val products by viewModel.products.collectAsState(initial = emptyList())
-
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
-        viewModel.fetchProducts()
+        viewModel.fetchProducts(context)
     }
 
     Scaffold(
@@ -39,13 +42,25 @@ fun ProductListScreen(navController: NavController, viewModel: ProductViewModel 
         }
 
     ) { paddingValues ->
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            items(products) { product ->
-                ProductItem(product)
+            if (products.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
+                    Text("No products available")
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp)
+                ) {
+                    items(products) { product ->
+                        ProductItem(product)
+                    }
+                }
             }
         }
     }
@@ -59,10 +74,10 @@ fun ProductItem(product: Product) {
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Row(modifier = Modifier.padding(16.dp)) {
-            Image(
-                painter = rememberAsyncImagePainter(product.image ?: ""),
-                contentDescription = product.productName,
-                modifier = Modifier.size(64.dp)
+            AsyncImage(
+                model = product.image ?: R.drawable.baseline_adjust_24,
+                contentDescription = "Product Image",
+                modifier = Modifier.size(100.dp)
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column {

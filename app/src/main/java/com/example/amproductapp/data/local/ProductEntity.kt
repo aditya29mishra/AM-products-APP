@@ -10,5 +10,5 @@ data class ProductEntity(
     val productType: String,
     val price: Double,
     val tax: Double,
-    val imageUrl: String?
+    val imagePath: String?
 )
