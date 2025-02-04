@@ -2,6 +2,7 @@ package com.example.amproductapp.ui.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.amproductapp.data.local.ProductEntity
 import com.example.amproductapp.data.model.Product
 import com.example.amproductapp.data.repository.ProductRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -52,6 +53,24 @@ class ProductViewModel @Inject constructor(
                 )
             }
             repository.addProduct(nameBody, typeBody, priceBody, taxBody, imagePart)
+        }
+    }
+
+    fun addProductOffline(
+        productName: String,
+        productType: String,
+        price: String,
+        tax: String,
+    ){
+        viewModelScope.launch {
+            val productEntity = ProductEntity(
+                productName = productName,
+                productType = productType,
+                price = price.toDouble(),
+                tax = tax.toDouble(),
+                imageUrl = null,
+            )
+            repository.addProductOffline(productEntity)
         }
     }
 }

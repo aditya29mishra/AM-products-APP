@@ -1,5 +1,8 @@
 package com.example.amproductapp.ui.addproduct
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -25,6 +28,13 @@ fun AddProductScreen(navController: NavController ,viewModel: ProductViewModel =
     var price by remember { mutableStateOf("") }
     var tax by remember { mutableStateOf("") }
     var productType by remember { mutableStateOf("") }
+
+    fun isOnline(context : Context) : Boolean{
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network)?: return false
+        return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+    }
 
     Scaffold(
         topBar = {
@@ -78,8 +88,12 @@ fun AddProductScreen(navController: NavController ,viewModel: ProductViewModel =
 
             Button(
                 onClick = {
-                /* TODO: Handle API call for product submission */
-                    viewModel.addProduct(productName, productType, price, tax)
+
+                    if (isOnline(navController.context)){
+                        viewModel.addProduct(productName, productType, price, tax)
+                    }else{
+                        viewModel.addProductOffline(productName, productType, price, tax)
+                    }
                     navController.popBackStack() // Navigate back after submission
                 },
                 modifier = Modifier.fillMaxWidth()

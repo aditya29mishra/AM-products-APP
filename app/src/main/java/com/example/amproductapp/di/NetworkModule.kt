@@ -1,5 +1,9 @@
 package com.example.amproductapp.di
 
+import android.content.Context
+import androidx.room.Room
+import com.example.amproductapp.data.local.ProductDao
+import com.example.amproductapp.data.local.AppDatabase
 import com.example.amproductapp.data.remote.ApiService
 import dagger.Module
 import dagger.Provides
@@ -15,7 +19,6 @@ object NetworkModule {
 
     @Provides
     @Singleton
-
     fun provideRetrofit(): Retrofit{
         return Retrofit.Builder()
             .baseUrl("https://app.getswipe.in/api/public/")

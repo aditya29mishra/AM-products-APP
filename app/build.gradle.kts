@@ -59,6 +59,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
 
     implementation(libs.hilt.android)
+    implementation(libs.androidx.room.common)
+    implementation(libs.androidx.room.common.jvm)
     kapt(libs.hilt.android.compiler)
     implementation(libs.material) // Or the latest version
     implementation (libs.androidx.hilt.navigation.compose)
