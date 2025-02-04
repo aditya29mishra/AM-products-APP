@@ -14,11 +14,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.amproductapp.ui.viewModel.ProductViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddProductScreen(navController: NavController) {
+fun AddProductScreen(navController: NavController ,viewModel: ProductViewModel = hiltViewModel()) {
     var productName by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
     var tax by remember { mutableStateOf("") }
@@ -75,7 +77,11 @@ fun AddProductScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { /* TODO: Handle API call for product submission */ },
+                onClick = {
+                /* TODO: Handle API call for product submission */
+                    viewModel.addProduct(productName, productType, price, tax)
+                    navController.popBackStack() // Navigate back after submission
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Submit")

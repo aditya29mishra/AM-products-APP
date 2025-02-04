@@ -15,6 +15,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.amproductapp.data.model.Product
+import com.example.amproductapp.ui.viewModel.ProductViewModel
 import com.example.amproductapp.ui.navigation.Screen
 
 
