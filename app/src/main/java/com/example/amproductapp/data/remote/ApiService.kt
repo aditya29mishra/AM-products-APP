@@ -1,5 +1,6 @@
 package com.example.amproductapp.data.remote
 
+import com.example.amproductapp.data.model.ApiResponse
 import com.example.amproductapp.data.model.Product
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
