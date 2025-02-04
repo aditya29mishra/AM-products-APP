@@ -5,6 +5,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.amproductapp.ui.addproduct.AddProductScreen
 import com.example.amproductapp.ui.listing.ProductListScreen
 
 sealed class Screen(val route: String) {
@@ -21,7 +22,7 @@ fun AppNavGraph() {
             ProductListScreen(navController, hiltViewModel())
         }
         composable(Screen.AddProduct.route) {
-            //AddProductScreen(navController)
+            AddProductScreen(navController)
         }
     }
 }
