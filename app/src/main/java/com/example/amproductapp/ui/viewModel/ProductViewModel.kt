@@ -73,4 +73,10 @@ class ProductViewModel @Inject constructor(
             repository.addProductOffline(productEntity)
         }
     }
+    fun syncOfflineProducts() {
+        viewModelScope.launch {
+            repository.syncOfflineProducts()
+        }
+    }
+
 }

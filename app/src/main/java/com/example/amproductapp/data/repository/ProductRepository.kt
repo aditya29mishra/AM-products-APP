@@ -4,8 +4,10 @@ import com.example.amproductapp.data.local.ProductDao
 import com.example.amproductapp.data.local.ProductEntity
 import com.example.amproductapp.data.model.Product
 import com.example.amproductapp.data.remote.ApiService
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 class ProductRepository @Inject constructor(
@@ -31,4 +33,24 @@ class ProductRepository @Inject constructor(
     suspend fun getOfflineProducts(): List<ProductEntity> {
         return productDao.getAllProducts()
     }
+
+    suspend fun syncOfflineProducts() {
+        val offlineProducts = productDao.getAllProducts()
+        for (product in offlineProducts) {
+            try {
+                val nameBody = product.productName.toRequestBody("text/plain".toMediaType())
+                val typeBody = product.productType.toRequestBody("text/plain".toMediaType())
+                val priceBody = product.price.toString().toRequestBody("text/plain".toMediaType())
+                val taxBody = product.tax.toString().toRequestBody("text/plain".toMediaType())
+
+                val response = apiService.addProduct(nameBody, typeBody, priceBody, taxBody, null)
+                if (response.success) {
+                    productDao.deleteProduct(product.id) // Remove from offline storage after sync
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
 }

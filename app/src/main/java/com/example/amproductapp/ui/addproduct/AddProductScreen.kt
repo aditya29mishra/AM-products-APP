@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.amproductapp.ui.viewModel.ProductViewModel
+import com.example.amproductapp.utils.NetworkUtils.isOnline
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,13 +29,6 @@ fun AddProductScreen(navController: NavController ,viewModel: ProductViewModel =
     var price by remember { mutableStateOf("") }
     var tax by remember { mutableStateOf("") }
     var productType by remember { mutableStateOf("") }
-
-    fun isOnline(context : Context) : Boolean{
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork?: return false
-        val capabilities = connectivityManager.getNetworkCapabilities(network)?: return false
-        return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
-    }
 
     Scaffold(
         topBar = {
