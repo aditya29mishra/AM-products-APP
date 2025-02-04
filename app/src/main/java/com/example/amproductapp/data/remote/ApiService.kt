@@ -16,8 +16,8 @@ interface ApiService {
     @Multipart
     @POST("add")
     suspend fun addProduct(
-        @Part("productName") productName: RequestBody,
-        @Part("productType") productType: RequestBody,
+        @Part("product_name") productName: RequestBody,
+        @Part("product_type") productType: RequestBody,
         @Part("price") price: RequestBody,
         @Part("tax") tax: RequestBody,
         @Part image: MultipartBody.Part?

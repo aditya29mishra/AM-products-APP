@@ -1,10 +1,11 @@
 package com.example.amproductapp.ui.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.amproductapp.data.local.ProductEntity
 import com.example.amproductapp.data.model.Product
 import com.example.amproductapp.data.repository.ProductRepository
+import com.google.android.engage.food.datamodel.ProductEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -52,8 +53,11 @@ class ProductViewModel @Inject constructor(
                     it.toRequestBody("image/jpeg".toMediaType())
                 )
             }
-            repository.addProduct(nameBody, typeBody, priceBody, taxBody, imagePart)
-        }
+            val response = repository.addProduct(nameBody, typeBody, priceBody, taxBody, imagePart)
+
+            if (response == null) {
+                Log.e("API_ERROR", "Failed to add product. Server returned an error.")
+            }        }
     }
 
     fun addProductOffline(
@@ -63,7 +67,7 @@ class ProductViewModel @Inject constructor(
         tax: String,
     ){
         viewModelScope.launch {
-            val productEntity = ProductEntity(
+            val productEntity = com.example.amproductapp.data.local.ProductEntity(
                 productName = productName,
                 productType = productType,
                 price = price.toDouble(),

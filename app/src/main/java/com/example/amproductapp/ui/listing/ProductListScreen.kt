@@ -66,9 +66,9 @@ fun ProductItem(product: Product) {
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column {
-                Text(text = product.productName, style = MaterialTheme.typography.bodyLarge)
-                Text(text = "Price: ₹${product.price}", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Tax: ${product.tax}%", style = MaterialTheme.typography.bodySmall)
+                Text(text = product.productName?:"", style = MaterialTheme.typography.bodyLarge)
+                Text(text = "Price: ₹${product.price?:""}", style = MaterialTheme.typography.bodyMedium)
+                Text(text = "Tax: ${product.tax?:""}%", style = MaterialTheme.typography.bodySmall)
             }
         }
     }

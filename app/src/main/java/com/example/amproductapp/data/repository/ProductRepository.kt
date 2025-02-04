@@ -1,13 +1,16 @@
 package com.example.amproductapp.data.repository
 
+import android.util.Log
 import com.example.amproductapp.data.local.ProductDao
 import com.example.amproductapp.data.local.ProductEntity
+import com.example.amproductapp.data.model.ApiResponse
 import com.example.amproductapp.data.model.Product
 import com.example.amproductapp.data.remote.ApiService
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.HttpException
 import javax.inject.Inject
 
 class ProductRepository @Inject constructor(
@@ -24,8 +27,19 @@ class ProductRepository @Inject constructor(
         price: RequestBody,
         tax: RequestBody,
         image: MultipartBody.Part?
-    ) = apiService.addProduct(productName, price, tax, productType, image)
-
+    ) : ApiResponse? {
+        return try {
+            val response = apiService.addProduct(productName, productType, price, tax, image)
+            Log.d("API_SUCCESS", "Product added successfully: $response")
+            response
+        } catch (e: HttpException) {
+            Log.e("API_ERROR", "HTTP error: ${e.code()} - ${e.message()}")
+            null
+        } catch (e: Exception) {
+            Log.e("API_ERROR", "Unexpected error: ${e.localizedMessage}")
+            null
+        }
+    }
     suspend fun addProductOffline(product: ProductEntity) {
         productDao.insertProduct(product)
     }

@@ -49,7 +49,7 @@ fun AddProductScreen(navController: NavController ,viewModel: ProductViewModel =
                 .padding(16.dp)
         ) {
             OutlinedTextField(
-                value = productName,
+                value = productName ?: "",
                 onValueChange = { productName = it },
                 label = { Text("Product Name") },
                 modifier = Modifier.fillMaxWidth()
@@ -57,7 +57,7 @@ fun AddProductScreen(navController: NavController ,viewModel: ProductViewModel =
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
-                value = price,
+                value = price?:"",
                 onValueChange = { price = it },
                 label = { Text("Price") },
                 modifier = Modifier.fillMaxWidth()
@@ -65,7 +65,7 @@ fun AddProductScreen(navController: NavController ,viewModel: ProductViewModel =
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
-                value = tax,
+                value = tax?:"",
                 onValueChange = { tax = it },
                 label = { Text("Tax %") },
                 modifier = Modifier.fillMaxWidth()
@@ -73,7 +73,7 @@ fun AddProductScreen(navController: NavController ,viewModel: ProductViewModel =
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
-                value = productType,
+                value = productType?:"",
                 onValueChange = { productType = it },
                 label = { Text("Product Type") },
                 modifier = Modifier.fillMaxWidth()
