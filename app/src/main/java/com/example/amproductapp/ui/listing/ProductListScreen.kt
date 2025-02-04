@@ -4,19 +4,23 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.amproductapp.data.model.Product
+import com.example.amproductapp.ui.navigation.Screen
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductListScreen(viewModel: ProductViewModel = hiltViewModel()) {
+fun ProductListScreen(navController: NavController, viewModel: ProductViewModel = hiltViewModel()) {
     val products by viewModel.products.collectAsState(initial = emptyList())
 
     LaunchedEffect(Unit) {
@@ -26,7 +30,13 @@ fun ProductListScreen(viewModel: ProductViewModel = hiltViewModel()) {
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("Product List") })
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { navController.navigate(Screen.AddProduct.route) }) {
+                Icon(Icons.Default.Add, contentDescription = "Add Product")
+            }
         }
+
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
