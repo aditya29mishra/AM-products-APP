@@ -61,6 +61,10 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
     implementation(libs.material) // Or the latest version
+    implementation (libs.androidx.hilt.navigation.compose)
+    implementation (libs.coil.compose)
+    implementation (libs.androidx.navigation.compose)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
